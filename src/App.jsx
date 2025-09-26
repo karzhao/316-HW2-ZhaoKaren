@@ -10,6 +10,7 @@ import MoveSong_Transaction from './transactions/MoveSong_Transaction.js';
 
 // THESE REACT COMPONENTS ARE MODALS
 import DeleteListModal from './components/DeleteListModal.jsx';
+import EditSongModal from './components/EditSongModal.jsx';
 
 // THESE REACT COMPONENTS ARE IN OUR UI
 import Banner from './components/Banner.jsx';
@@ -36,7 +37,8 @@ class App extends React.Component {
         this.state = {
             listKeyPairMarkedForDeletion : null,
             currentList : null,
-            sessionData : loadedSessionData
+            sessionData : loadedSessionData,
+            songIndexMarkedForEdit: null
         }
     }
     sortKeyNamePairsByName = (keyNamePairs) => {
@@ -223,6 +225,31 @@ class App extends React.Component {
         let transaction = new MoveSong_Transaction(this, start, end);
         this.tps.processTransaction(transaction);
     }
+    // FUNCTIONS FOR EDITING
+    markSongForEdit = (index) => {
+    this.setState({ songIndexMarkedForEdit: index }, () => this.showEditSongModal());
+    };
+
+    showEditSongModal = () => {
+    const modal = document.getElementById("edit-song-modal");
+    if (modal) modal.classList.add("is-visible");
+    };
+
+    hideEditSongModal = () => {
+    const modal = document.getElementById("edit-song-modal");
+    if (modal) modal.classList.remove("is-visible");
+    this.setState({ songIndexMarkedForEdit: null });
+    };
+
+    confirmEditSong = (updated) => {
+    const i = this.state.songIndexMarkedForEdit;
+    const list = { ...this.state.currentList, songs: [...this.state.currentList.songs] };
+    const prev = list.songs[i] || {};
+    list.songs[i] = { ...prev, ...updated };
+    this.setStateWithUpdatedList(list);
+    this.hideEditSongModal();
+    };
+
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING AN UNDO
     undo = () => {
         if (this.tps.hasTransactionToUndo()) {
@@ -291,7 +318,17 @@ class App extends React.Component {
                 />
                 <SongCards
                     currentList={this.state.currentList}
-                    moveSongCallback={this.addMoveSongTransaction} />
+                    moveSongCallback={this.addMoveSongTransaction}
+                    openEditSongCallback={this.markSongForEdit} />
+                <EditSongModal
+                song={
+                    this.state.currentList && this.state.songIndexMarkedForEdit != null
+                    ? this.state.currentList.songs[this.state.songIndexMarkedForEdit]
+                    : null
+                }
+                confirmEditSongCallback={this.confirmEditSong}
+                hideEditSongModalCallback={this.hideEditSongModal}
+                />
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteListModal

@@ -37,6 +37,7 @@ export default class SongCards extends React.Component {
                                 selected={index === this.state.selectedIndex}
                                 onSelect={this.handleSelect}
                                 moveCallback={moveSongCallback}
+                                editSongCallback={this.props.openEditSongCallback}
                             />
                         ))
                     }

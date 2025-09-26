@@ -89,6 +89,7 @@ export default class SongCard extends React.Component {
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}
                 role="button"
+                onDoubleClick={() => this.props.editSongCallback(index)}
             >
                 {youTubeHref ? (
                     <a
