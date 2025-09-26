@@ -8,10 +8,13 @@ export default class PlaylistCards extends React.Component {
                 deleteListCallback, 
                 loadListCallback,
                 renameListCallback} = this.props;
+        const sortedPairs = [...keyNamePairs].sort((a, b) =>
+        a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
+        );
         return (
             <div id="playlist-cards">
                 {
-                    keyNamePairs.map((pair) => (
+                    sortedPairs.map((pair) => (
                         <PlaylistCard
                             key={pair.key}
                             keyNamePair={pair}
