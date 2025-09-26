@@ -16,6 +16,7 @@
   --swatch-link-contrast: lightgreen;
   --swatch-link-hover: pink;
   --swatch-link-active: magenta;
+  --font-primary: "PT Sans Narrow", sans-serif;
   
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
 }
@@ -26,7 +27,7 @@ body {
 
 #root {
   background-color: var(--swatch-primary);
-  font-family: serif;
+  font-family: var(--font-primary);
   position: absolute;
   width: 80%;
   left: 10%;
@@ -101,6 +102,12 @@ body {
   background-color: var(--swatch-accent);
 }
 
+.song-card {
+  font-family: var(--font-primary);
+  font-weight: bold;
+  font-style: italic;
+}
+
 .song-card,
 .selected-song-card,
 .unselected-song-card {
@@ -113,6 +120,7 @@ body {
   border-radius: 125px;
   background: var(--swatch-primary);
   user-select: none;
+
 }
 
 .selected-song-card {
@@ -143,9 +151,13 @@ body {
 }
 
 .song-card .song-card-title {
+  font-family: var(--font-primary);
+  /* font-weight: inherit;
+  font-style: inherit; */
   text-decoration: none;
   color: var(--swatch-link-emphasis);
 }
+
 
 .song-card:hover .song-card-title {
   color: var(--swatch-link-contrast);
@@ -292,6 +304,7 @@ span {
   font-weight: bold;
   font-style: italic;
 }
+
 
 .modal-south {
   display:flex;
