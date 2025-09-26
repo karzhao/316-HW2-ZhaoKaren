@@ -10,22 +10,32 @@ export default class SongCard extends React.Component {
         }
     }
 
-    handleClick = () => {
-        const { onSelect, index } = this.props;
-        if (onSelect) onSelect(index); // tell parent which card was clicked
-    }
+    // handleClick = () => {
+    //     const { onSelect, index } = this.props;
+    //     if (onSelect) onSelect(index); // tell parent which card was clicked
+    // }
 
     handleDragStart = (event) => {
         // index is passed from parent
-        event.dataTransfer.setData("song", String(this.props.index)); // 0 index based
+        event.dataTransfer.setData("text/plain", String(this.props.index));
         event.dataTransfer.effectAllowed = "move";
-        this.setState(
-            { isDragging: true }
-            );
+        this.setState({ isDragging: true, draggedTo: false });
     }
+    // update state of dragged
+    handleDragEnd = (event) => {
+        this.setState({ isDragging: false, draggedTo: false })
+    }
+    // the potential drop target
     handleDragOver = (event) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = "move";
+
+        const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
+        const targetIndex = this.props.index;
+
+        // If source, don't alter target-hover state
+        if (sourceIndex === targetIndex) return;
+
         if (!this.state.draggedTo) this.setState({ draggedTo: true });
     }
     handleDragEnter = (event) => {
@@ -40,8 +50,8 @@ export default class SongCard extends React.Component {
         event.preventDefault();
 
         // Use currentTarget (the card div)
-        const targetIndex = Number(event.currentTarget.dataset.index);
-        const sourceIndex = Number(event.dataTransfer.getData("song"));
+        const targetIndex = this.props.index;
+        const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
 
         this.setState({ isDragging: false, draggedTo: false });
 
@@ -66,8 +76,9 @@ export default class SongCard extends React.Component {
                 data-index={index}
                 className={classes}
                 draggable
-                onClick={this.handleClick}
+                // onClick={this.handleClick}
                 onDragStart={this.handleDragStart}
+                onDragEnd={this.handleDragEnd}
                 onDragOver={this.handleDragOver}
                 onDragEnter={this.handleDragEnter}
                 onDragLeave={this.handleDragLeave}
