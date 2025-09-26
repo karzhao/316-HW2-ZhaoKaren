@@ -10,6 +10,13 @@
   --swatch-contrast: #111111; 
   --swatch-accent: #669966; 
   --swatch-status: #123456;
+
+  /* link colors used by the song title */
+  --swatch-link-emphasis: #b88320;
+  --swatch-link-contrast: lightgreen;
+  --swatch-link-hover: pink;
+  --swatch-link-active: magenta;
+  
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
 }
 
@@ -93,6 +100,68 @@ body {
   overflow: scroll;
   background-color: var(--swatch-accent);
 }
+
+.song-card,
+.selected-song-card,
+.unselected-song-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 24pt;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 125px;
+  background: var(--swatch-primary);
+  user-select: none;
+}
+
+.selected-song-card {
+  background-color: var(--swatch-accent);
+  color: var(--swatch-contrast);
+}
+
+.unselected-song-card {
+  background-color: var(--swatch-complement);
+}
+
+.unselected-song-card:hover,
+.song-card:hover {
+  cursor: pointer;
+  background-color: var(--swatch-contrast);
+  color: white;
+}
+
+/* Keep DnD visual state */
+.song-card-dragged-to {
+  outline: 2px dashed var(--swatch-contrast);
+  background-color: var(--swatch-primary);
+}
+
+.is-dragging {
+  border: 2px black solid;
+  opacity: 0.5;
+}
+
+.song-card .song-card-title {
+  text-decoration: none;
+  color: var(--swatch-link-emphasis);
+}
+
+.song-card:hover .song-card-title {
+  color: var(--swatch-link-contrast);
+}
+
+.song-card:hover .song-card-title:hover {
+  color: var(--swatch-link-hover);
+}
+
+.song-card-title:active {
+  color: var(--swatch-link-active);
+}
+
+.song-card-by { color: inherit; }
+.song-card-artist { color: red; }
+
 
 #statusbar {
   grid-column: 1 / 3;

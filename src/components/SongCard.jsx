@@ -9,75 +9,73 @@ export default class SongCard extends React.Component {
             draggedTo: false
         }
     }
+
+    handleClick = () => {
+        const { onSelect, index } = this.props;
+        if (onSelect) onSelect(index); // tell parent which card was clicked
+    }
+
     handleDragStart = (event) => {
-        event.dataTransfer.setData("song", event.target.id);
-        this.setState(prevState => ({
-            isDragging: true,
-            draggedTo: prevState.draggedTo
-        }));
+        // index is passed from parent
+        event.dataTransfer.setData("song", String(this.props.index)); // 0 index based
+        event.dataTransfer.effectAllowed = "move";
+        this.setState(
+            { isDragging: true }
+            );
     }
     handleDragOver = (event) => {
         event.preventDefault();
-        this.setState(prevState => ({
-            isDragging: prevState.isDragging,
-            draggedTo: true
-        }));
+        event.dataTransfer.dropEffect = "move";
+        if (!this.state.draggedTo) this.setState({ draggedTo: true });
     }
     handleDragEnter = (event) => {
         event.preventDefault();
-        this.setState(prevState => ({
-            isDragging: prevState.isDragging,
-            draggedTo: true
-        }));
+        this.setState({ draggedTo: true });
     }
     handleDragLeave = (event) => {
         event.preventDefault();
-        this.setState(prevState => ({
-            isDragging: prevState.isDragging,
-            draggedTo: false
-        }));
+        this.setState({ draggedTo: false });
     }
     handleDrop = (event) => {
         event.preventDefault();
-        let target = event.target;
-        let targetId = target.id;
-        targetId = targetId.substring(target.id.indexOf("-") + 1);
-        let sourceId = event.dataTransfer.getData("song");
-        sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
-        
-        this.setState(prevState => ({
-            isDragging: false,
-            draggedTo: false
-        }));
 
-        // ASK THE MODEL TO MOVE THE DATA
-        this.props.moveCallback(sourceId, targetId);
-    }
+        // Use currentTarget (the card div)
+        const targetIndex = Number(event.currentTarget.dataset.index);
+        const sourceIndex = Number(event.dataTransfer.getData("song"));
 
-    getItemNum = () => {
-        return this.props.id.substring("song-card-".length);
+        this.setState({ isDragging: false, draggedTo: false });
+
+        // Ask parent to move the data
+        this.props.moveCallback(sourceIndex, targetIndex);
     }
 
     render() {
-        const { song } = this.props;
-        let num = this.getItemNum();
-        console.log("num: " + num);
-        let itemClass = "song-card";
-        if (this.state.draggedTo) {
-            itemClass = "song-card-dragged-to";
-        }
+        const { song, index, selected } = this.props;
+        const classes = [
+            "song-card",
+            selected ? "selected-song-card" : "unselected-song-card", // styles
+            this.state.draggedTo ? "song-card-dragged-to" : "",
+            this.state.isDragging ? "is-dragging" : "" 
+        ].filter(Boolean).join(" ");
+        
+        
         return (
             <div
-                id={'song-' + num}
-                className={itemClass}
+                id={`song-${index}`}
+                data-index={index}
+                className={classes}
+                draggable
+                onClick={this.handleClick}
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
                 onDragEnter={this.handleDragEnter}
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}
-                draggable="true"
+                role="button"
             >
-                {song.title} by {song.artist}
+                <span className="song-card-title">{song.title}</span>
+                <span className="song-card-by">&nbsp;by&nbsp;</span>
+                <span className="song-card-artist">{song.artist}</span>
             </div>
         )
     }
