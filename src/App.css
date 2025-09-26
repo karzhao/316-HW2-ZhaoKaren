@@ -19,6 +19,14 @@
   --font-primary: "PT Sans Narrow", sans-serif;
   
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
+  --modal-max-w: 560px;      /* shared width for all modals */
+  --modal-max-h: 80vh;       /* prevents super-tall modals */
+  --modal-radius: 12px;
+  --modal-pad: 1rem;
+
+  --modal-title-size: 1.5rem;  /* ≈ 24px */
+  --modal-body-size: 1rem;     /* ≈ 16px */
+  --modal-button-size: 1rem;
 }
 
 body {
@@ -243,7 +251,31 @@ input {
 
 /* THIS STYLE SHEET MANAGES STYLE FOR OUR MODAL, i.e. DIALOG BOX */
 
+
 .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--black, rgba(0,0,0,.45));   /* fallback if --black not set */
+  color: var(--swatch-text, var(--swatch-contrast)); /* fallback if --swatch-text not set */
+  cursor: pointer;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.35s ease-in;
+  font-family: var(--font-primary);
+}
+
+.modal.is-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* .modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -263,11 +295,11 @@ input {
 .modal.is-visible {
   visibility: visible;
   opacity: 1;
-}
+} */
 
 .modal-root {
   position: relative;
-  max-width: 1200vw;
+  max-width: min(1250px, 92vw);
   max-height: 600vh;
   overflow: visible;
   display: flex;
@@ -285,16 +317,16 @@ input {
 }
 
 .modal-north {
-  font-size:32pt;
+  font-size: 32pt;
   font-weight: bold;
   background-color: #669966;
-  color:white;
+  color: white;
 }
 
 .modal-center {
   display: grid;
   grid-template-columns: 30% 65%;
-  grid-template-rows: 33% 33% 33%;
+  grid-template-rows: 20% 20% 20% 20% 20%;
   gap: 10px 20px;
   font-size: 48pt;
 }
@@ -304,9 +336,8 @@ span {
   font-style: italic;
 }
 
-
 .modal-south {
-  display:flex;
+  display: flex;
   flex-direction: row;
   background-color: lightgray;
   align-items: center;
@@ -319,16 +350,17 @@ span {
 }
 
 .modal-prompt {  
-  font-size:28pt;
+  font-size: 28pt;
   font-weight: bold;
 }
 
 .modal-textfield {
-  font-size:28pt;
+  font-size: 24pt;
 }
 
 .modal-button {
   font-size: 20pt;
+  margin: 5px;
 }
 
 #title-prompt {
