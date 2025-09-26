@@ -103,8 +103,9 @@ export default class SongCard extends React.Component {
                 ) : (
                     <span className="song-card-title">{song.title}</span>
                 )}
-                <span className="song-card-by">&nbsp;by&nbsp;</span>
+                <span className="song-card-by"> by </span>
                 <span className="song-card-artist">{song.artist}</span>
+                <span className="song-card-year">({song.year})</span>
             </div>
         )
     }

@@ -161,6 +161,7 @@ body {
 
 .song-card-by { color: inherit; }
 .song-card-artist { color: red; }
+.song-card-year { color: inherit; }
 
 
 #statusbar {
