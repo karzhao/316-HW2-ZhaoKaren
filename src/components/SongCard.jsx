@@ -61,7 +61,9 @@ export default class SongCard extends React.Component {
 
     render() {
         const { song, index, selected } = this.props;
+
         if (!song) return null; // guard
+
         const classes = [
             "song-card",
             selected ? "selected-song-card" : "unselected-song-card", // styles
@@ -69,7 +71,10 @@ export default class SongCard extends React.Component {
             this.state.isDragging ? "is-dragging" : "" 
         ].filter(Boolean).join(" ");
         
-        
+        // YouTube href
+        const youTubeHref = song.youTubeId ? `https://www.youtube.com/watch?v=${song.youTubeId}` : null;
+
+
         return (
             <div
                 id={`song-${index}`}
@@ -85,7 +90,19 @@ export default class SongCard extends React.Component {
                 onDrop={this.handleDrop}
                 role="button"
             >
-                <span className="song-card-title">{song.title}</span>
+                {youTubeHref ? (
+                    <a
+                    className="song-card-title"
+                    href={youTubeHref}
+                    target="_blank"
+                    draggable={false}
+                    onClick={(e) => e.stopPropagation()} // don't interfere with drag/select
+                    >
+                    {song.title}
+                    </a>
+                ) : (
+                    <span className="song-card-title">{song.title}</span>
+                )}
                 <span className="song-card-by">&nbsp;by&nbsp;</span>
                 <span className="song-card-artist">{song.artist}</span>
             </div>
