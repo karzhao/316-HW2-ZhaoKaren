@@ -209,25 +209,13 @@ class App extends React.Component {
     // THIS FUNCTION MOVES A SONG IN THE CURRENT LIST FROM
     // start TO end AND ADJUSTS ALL OTHER ITEMS ACCORDINGLY
     moveSong(start, end) {
-        let list = this.state.currentList;
+        if (start === end) return;
 
-        // WE NEED TO UPDATE THE STATE FOR THE APP
-        start -= 1;
-        end -= 1;
-        if (start < end) {
-            let temp = list.songs[start];
-            for (let i = start; i < end; i++) {
-                list.songs[i] = list.songs[i + 1];
-            }
-            list.songs[end] = temp;
-        }
-        else if (start > end) {
-            let temp = list.songs[start];
-            for (let i = start; i > end; i--) {
-                list.songs[i] = list.songs[i - 1];
-            }
-            list.songs[end] = temp;
-        }
+        const songs = [...this.state.currentList.songs];
+        const [moved] = songs.splice(start, 1);
+        songs.splice(end, 0, moved);
+
+        const list = { ...this.state.currentList, songs };
         this.setStateWithUpdatedList(list);
     }
     // THIS FUNCTION ADDS A MoveSong_Transaction TO THE TRANSACTION STACK

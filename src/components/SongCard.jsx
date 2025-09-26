@@ -51,6 +51,7 @@ export default class SongCard extends React.Component {
 
     render() {
         const { song, index, selected } = this.props;
+        if (!song) return null; // guard
         const classes = [
             "song-card",
             selected ? "selected-song-card" : "unselected-song-card", // styles
