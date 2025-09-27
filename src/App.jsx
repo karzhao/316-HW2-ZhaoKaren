@@ -7,6 +7,10 @@ import { jsTPS } from 'jstps';
 
 // OUR TRANSACTIONS
 import MoveSong_Transaction from './transactions/MoveSong_Transaction.js';
+import AddSong_Transaction from './transactions/AddSong_Transaction.js';
+import DeleteSong_Transaction from './transactions/DeleteSong_Transaction.js';
+import DuplicateSong_Transaction from './transactions/DuplicateSong_Transaction.js';
+import EditSong_Transaction from './transactions/EditSong_Transaction.js';
 
 // THESE REACT COMPONENTS ARE MODALS
 import DeleteListModal from './components/DeleteListModal.jsx';
@@ -19,6 +23,8 @@ import SidebarHeading from './components/SidebarHeading.jsx';
 import SidebarList from './components/PlaylistCards.jsx';
 import SongCards from './components/SongCards.jsx';
 import Statusbar from './components/Statusbar.jsx';
+
+
 
 class App extends React.Component {
     constructor(props) {
@@ -41,6 +47,37 @@ class App extends React.Component {
             songIndexMarkedForEdit: null
         }
     }
+
+    getSongAt = (i) => {
+    const list = this.state.currentList;
+    return list ? list.songs[i] : null;
+    };
+
+    addSongAt = (i, song) => {
+    if (!this.state.currentList) return;
+    const songs = [...this.state.currentList.songs];
+    songs.splice(i, 0, { ...song });
+    const list = { ...this.state.currentList, songs };
+    this.setStateWithUpdatedList(list);
+    };
+
+    deleteSongAt = (i) => {
+    if (!this.state.currentList) return;
+    const songs = this.state.currentList.songs.filter((_, idx) => idx !== i);
+    const list  = { ...this.state.currentList, songs };
+    this.setStateWithUpdatedList(list);
+    };
+
+    setSongAt = (i, newSong) => {
+    if (!this.state.currentList) return;
+    const songs = [...this.state.currentList.songs];
+    songs[i] = { ...newSong };
+    const list = { ...this.state.currentList, songs };
+    this.setStateWithUpdatedList(list);
+    };
+
+    
+    
     sortKeyNamePairsByName = (keyNamePairs) => {
         keyNamePairs.sort((keyPair1, keyPair2) => {
             // GET THE LISTS
@@ -224,6 +261,7 @@ class App extends React.Component {
     addMoveSongTransaction = (start, end) => {
         let transaction = new MoveSong_Transaction(this, start, end);
         this.tps.processTransaction(transaction);
+        this.setState(s => s);
     }
     // FUNCTIONS FOR EDITING
     markSongForEdit = (index) => {
@@ -243,11 +281,12 @@ class App extends React.Component {
 
     confirmEditSong = (updated) => {
     const i = this.state.songIndexMarkedForEdit;
-    const list = { ...this.state.currentList, songs: [...this.state.currentList.songs] };
-    const prev = list.songs[i] || {};
-    list.songs[i] = { ...prev, ...updated };
-    this.setStateWithUpdatedList(list);
+    const prev = this.getSongAt(i);
+    const next = { ...prev, ...updated };
+    const t = new EditSong_Transaction(this, i, prev, next);
+    this.tps.processTransaction(t);
     this.hideEditSongModal();
+    this.setState(s => s);
     };
 
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING AN UNDO
@@ -256,7 +295,7 @@ class App extends React.Component {
             this.tps.undoTransaction();
 
             // MAKE SURE THE LIST GETS PERMANENTLY UPDATED
-            this.db.mutationUpdateList(this.state.currentList);
+            this.setState(s => s);
         }
     }
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING A REDO
@@ -265,7 +304,7 @@ class App extends React.Component {
             this.tps.doTransaction();
 
             // MAKE SURE THE LIST GETS PERMANENTLY UPDATED
-            this.db.mutationUpdateList(this.state.currentList);
+            this.setState(s => s);
         }
     }
     markListForDeletion = (keyPair) => {
@@ -292,9 +331,9 @@ class App extends React.Component {
     // THIS FUNCTION DELETE SONG
     deleteSong = (index) => {
         if (!this.state.currentList) return;
-        const songs = this.state.currentList.songs.filter((_, i) => i !== index);
-        const list  = { ...this.state.currentList, songs };
-        this.setStateWithUpdatedList(list); // persists via DBManager in the callback
+        const t = new DeleteSong_Transaction(this, index);
+        this.tps.processTransaction(t);
+        this.setState(s => s);
     };
     
     // duplicate list
@@ -330,20 +369,13 @@ class App extends React.Component {
 
     duplicateSong = (index) => {
         if (!this.state.currentList) return;
-        const songs = [...this.state.currentList.songs];
-        const original = songs[index];
-        if (!original) return;
-
-        const copy = { ...original, title: `${original.title} (Copy)` }; // append (Copy)
-        songs.splice(index + 1, 0, copy);  // insert right after
-
-        const list = { ...this.state.currentList, songs };
-        this.setStateWithUpdatedList(list);
+        const t = new DuplicateSong_Transaction(this, index);
+        this.tps.processTransaction(t);
     };
 
     addSong = () => {
         if (!this.state.currentList) return;
-
+        const index = this.getPlaylistSize();
         // HW1 defaults
         const newSong = {
             title: "Untitled",
@@ -353,10 +385,33 @@ class App extends React.Component {
         };
 
         // append to end
-        const songs = [...this.state.currentList.songs, newSong];
-        const list  = { ...this.state.currentList, songs };
-        this.setStateWithUpdatedList(list);
+        const t = new AddSong_Transaction(this, index, newSong);
+        this.tps.processTransaction(t);
+        this.setState(s => s);
     };
+
+    componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown, true);
+    }
+    componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown, true);
+    }
+    handleKeyDown = (e) => {
+    
+
+    // Avoid stealing shortcuts inside inputs if you want:
+    // if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && meta) return;
+
+    const isMod = e.metaKey || e.ctrlKey; 
+    if (!isMod) return;
+    if (e.code === 'KeyZ' && !e.shiftKey) {
+        e.preventDefault();
+        this.undo();
+    } else if (e.code === 'KeyY' || (e.code === 'KeyZ' && e.shiftKey)){
+        e.preventDefault();
+        this.redo();
+    }
+    }
 
     render() {
         let canAddSong = !!this.state.currentList; // true only if list is open
