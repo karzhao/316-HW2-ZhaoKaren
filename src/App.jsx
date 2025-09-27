@@ -422,6 +422,7 @@ class App extends React.Component {
             <div id="root">
                 <Banner />
                 <SidebarHeading
+                    canCreateList={this.state.currentList === null}
                     createNewListCallback={this.createNewList}
                 />
                 <SidebarList
