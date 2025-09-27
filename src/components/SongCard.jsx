@@ -59,6 +59,12 @@ export default class SongCard extends React.Component {
         this.props.moveCallback(sourceIndex, targetIndex);
     }
 
+    handleDeleteClick = (e) => {
+        e.stopPropagation(); // don’t interfere with drag/select
+        if (this.props.deleteSongCallback) {
+            this.props.deleteSongCallback(this.props.index);
+        }
+    }
     render() {
         const { song, index, selected } = this.props;
 
@@ -107,6 +113,14 @@ export default class SongCard extends React.Component {
                 <span className="song-card-by"> by </span>
                 <span className="song-card-artist">{song.artist}</span>
                 <span className="song-card-year">({song.year})</span>
+                {/* delete button song */}
+                <input
+                        type="button"
+                        id={`delete-song-${index}`}
+                        className="card-button"
+                        onClick={this.handleDeleteClick}
+                        value={"🗑"} 
+                        style={{ marginLeft: 'auto', flexShrink: 0 }} />
             </div>
         )
     }

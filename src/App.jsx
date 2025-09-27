@@ -289,6 +289,14 @@ class App extends React.Component {
         let modal = document.getElementById("delete-list-modal");
         modal.classList.remove("is-visible");
     }
+    // THIS FUNCTION DELETE SONG
+    deleteSong = (index) => {
+        if (!this.state.currentList) return;
+        const songs = this.state.currentList.songs.filter((_, i) => i !== index);
+        const list  = { ...this.state.currentList, songs };
+        this.setStateWithUpdatedList(list); // persists via DBManager in the callback
+    };
+    
     render() {
         let canAddSong = this.state.currentList !== null;
         let canUndo = this.tps.hasTransactionToUndo();
@@ -319,8 +327,11 @@ class App extends React.Component {
                 <SongCards
                     currentList={this.state.currentList}
                     moveSongCallback={this.addMoveSongTransaction}
-                    openEditSongCallback={this.markSongForEdit} />
-                <EditSongModal
+                    openEditSongCallback={this.markSongForEdit} 
+                    deleteSongCallback={this.deleteSong}
+                    />
+
+                    <EditSongModal
                 song={
                     this.state.currentList && this.state.songIndexMarkedForEdit != null
                     ? this.state.currentList.songs[this.state.songIndexMarkedForEdit]
@@ -329,6 +340,7 @@ class App extends React.Component {
                 confirmEditSongCallback={this.confirmEditSong}
                 hideEditSongModalCallback={this.hideEditSongModal}
                 />
+                
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteListModal
