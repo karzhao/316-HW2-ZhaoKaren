@@ -197,6 +197,9 @@ body {
 #add-playlist-button {
   float:left;
 }
+
+.playlist-card .playlist-card-text { color: inherit; }
+
 .playlist-card,
 .song-card {
   display: flex;
@@ -230,21 +233,6 @@ body {
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
-}
-
-.unselected-playlist-card:hover {
-  cursor: pointer;
-  background-color: var(--swatch-contrast);
-  color:white;
-}
-
-.selected-playlist-card {
-  background-color: var(--swatch-accent);
-  color: white;
-}
-
-.unselected-playlist-card {
-  background-color: var(--swatch-complement);
 }
 
 .card-button, .card-button-disabled {
@@ -399,6 +387,26 @@ span {
   margin:5px;
 }
 
+
+.unselected-playlist-card:hover {
+  cursor: pointer;
+  background-color: var(--swatch-contrast);
+  color: var(--swatch-link-contrast); 
+}
+
+.selected-playlist-card {
+  background-color: var(--swatch-accent);
+  color: var(--swatch-contrast);
+}
+
+.unselected-playlist-card {
+  background-color: var(--swatch-complement);
+}
+
+.selected-playlist-card:hover {
+  background-color: var(--swatch-contrast); /* black */
+  color: var(--swatch-link-contrast); /* green */
+}
 .modal p + p {
   margin-top: 1rem;
 }
