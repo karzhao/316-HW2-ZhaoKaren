@@ -297,6 +297,49 @@ class App extends React.Component {
         this.setStateWithUpdatedList(list); // persists via DBManager in the callback
     };
     
+    // duplicate list
+    // in class App
+    duplicateList = (key) => {
+    const original = this.db.queryGetList(key);
+    if (!original) return;
+
+    const newKey = this.state.sessionData.nextKey;
+    const newName = `${original.name} (Copy)`;
+
+    // deep copy songs (flat objects -> spread is enough)
+    const newSongs = original.songs.map(s => ({ ...s }));
+
+    const newList = { key: newKey, name: newName, songs: newSongs };
+    const newPair = { key: newKey, name: newName };
+    const updatedPairs = [...this.state.sessionData.keyNamePairs, newPair];
+    this.sortKeyNamePairsByName(updatedPairs);
+
+    this.setState(prev => ({
+        currentList: newList,
+        listKeyPairMarkedForDeletion: null,
+        sessionData: {
+        nextKey: prev.sessionData.nextKey + 1,
+        counter: prev.sessionData.counter + 1,
+        keyNamePairs: updatedPairs
+        }
+    }), () => {
+        this.db.mutationCreateList(newList);
+        this.db.mutationUpdateSessionData(this.state.sessionData);
+    });
+    };
+
+    duplicateSong = (index) => {
+        if (!this.state.currentList) return;
+        const songs = [...this.state.currentList.songs];
+        const original = songs[index];
+        if (!original) return;
+
+        const copy = { ...original, title: `${original.title} (Copy)` }; // append (Copy)
+        songs.splice(index + 1, 0, copy);  // insert right after
+
+        const list = { ...this.state.currentList, songs };
+        this.setStateWithUpdatedList(list);
+    };
     render() {
         let canAddSong = this.state.currentList !== null;
         let canUndo = this.tps.hasTransactionToUndo();
@@ -314,6 +357,7 @@ class App extends React.Component {
                     deleteListCallback={this.markListForDeletion}
                     loadListCallback={this.loadList}
                     renameListCallback={this.renameList}
+                    duplicateListCallback={this.duplicateList}
                 />
                 <EditToolbar
                     canAddSong={canAddSong}
@@ -329,6 +373,7 @@ class App extends React.Component {
                     moveSongCallback={this.addMoveSongTransaction}
                     openEditSongCallback={this.markSongForEdit} 
                     deleteSongCallback={this.deleteSong}
+                    duplicateSongCallback={this.duplicateSong}
                     />
 
                     <EditSongModal

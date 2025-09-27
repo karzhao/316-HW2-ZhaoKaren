@@ -12,7 +12,7 @@ export default class PlaylistCards extends React.Component {
         const sortedPairs = [...keyNamePairs].sort((a, b) =>
         a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
         );
-        
+
         return (
             <div id="playlist-cards">
                 {
@@ -24,6 +24,7 @@ export default class PlaylistCards extends React.Component {
                             deleteListCallback={deleteListCallback}
                             loadListCallback={loadListCallback}
                             renameListCallback={renameListCallback}
+                            duplicateListCallback={this.props.duplicateListCallback}
                         />
                     ))
                 }

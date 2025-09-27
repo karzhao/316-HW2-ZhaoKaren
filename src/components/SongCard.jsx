@@ -65,6 +65,11 @@ export default class SongCard extends React.Component {
             this.props.deleteSongCallback(this.props.index);
         }
     }
+
+    handleDuplicateClick = (e) => {
+        e.stopPropagation();
+        this.props.duplicateSongCallback?.(this.props.index);
+    };
     render() {
         const { song, index, selected } = this.props;
 
@@ -113,14 +118,29 @@ export default class SongCard extends React.Component {
                 <span className="song-card-by"> by </span>
                 <span className="song-card-artist">{song.artist}</span>
                 <span className="song-card-year">({song.year})</span>
-                {/* delete button song */}
+                {/* buttons */}
+                <span className="card-actions">
                 <input
-                        type="button"
-                        id={`delete-song-${index}`}
-                        className="card-button"
-                        onClick={this.handleDeleteClick}
-                        value={"🗑"} 
-                        style={{ marginLeft: 'auto', flexShrink: 0 }} />
+                    type="button"
+                    id={`delete-song-${index}`}
+                    className="card-button"
+                    onClick={this.handleDeleteClick}
+                    value="🗑"
+                    draggable={false}
+                    title="Delete song"
+                    aria-label={`Delete ${song.title} by ${song.artist}`}
+                />
+                <input
+                    id={`duplicate-song-${index}`}
+                    type="button"
+                    className="card-button"
+                    value="⎘"
+                    onClick={this.handleDuplicateClick}
+                    draggable={false}
+                    title="Duplicate song"
+                    aria-label={`Duplicate ${song.title} by ${song.artist}`}
+                />
+                </span>
             </div>
         )
     }

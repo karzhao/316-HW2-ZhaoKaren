@@ -49,6 +49,11 @@ export default class PlaylistCard extends React.Component {
         this.handleToggleEdit();
     }
 
+    handleDuplicate = (e) => {
+        e.stopPropagation();
+        this.props.duplicateListCallback(this.props.keyNamePair.key);
+    };
+
     render() {
         const { keyNamePair, selected } = this.props;
 
@@ -82,12 +87,28 @@ export default class PlaylistCard extends React.Component {
                         className="playlist-card-text">
                         {keyNamePair.name}
                     </span>
-                    <input
-                        type="button"
-                        id={"delete-list-" + keyNamePair.key}
-                        className="card-button"
-                        onClick={this.handleDeleteList}
-                        value={"🗑"} />
+                    <span className="card-actions">
+                        <input
+                            type="button"
+                            id={"delete-list-" + keyNamePair.key}
+                            className="card-button"
+                            onClick={this.handleDeleteList}
+                            value="🗑"
+                            draggable={false}
+                            title="Delete list"
+                            aria-label={`Delete ${keyNamePair.name}`}
+                        />
+                        <input
+                            type="button"
+                            id={"duplicate-list-" + keyNamePair.key}
+                            className="playlist-card-button"
+                            value="⎘"
+                            onClick={this.handleDuplicate}
+                            draggable={false}
+                            title="Duplicate list"
+                            aria-label={`Duplicate ${keyNamePair.name}`}
+                        />
+                    </span>
                 </div>
             );
         }

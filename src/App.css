@@ -197,7 +197,34 @@ body {
 #add-playlist-button {
   float:left;
 }
+.playlist-card,
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.playlist-card-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-actions {
+  margin-left: auto;      /* pushes actions to the edge */
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
 
+.card-button, .card-button-disabled, .playlist-card-button {
+  font-size: 18pt;
+  border: 1px solid #ccc;
+  border-radius: .25rem;
+  background: #fff;
+  color: black;
+  cursor: pointer;
+}
 .playlist-card, .selected-playlist-card, .unselected-playlist-card {
   font-size: 18pt;
   margin: 10px;
