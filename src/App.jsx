@@ -340,8 +340,26 @@ class App extends React.Component {
         const list = { ...this.state.currentList, songs };
         this.setStateWithUpdatedList(list);
     };
+
+    addSong = () => {
+        if (!this.state.currentList) return;
+
+        // HW1 defaults
+        const newSong = {
+            title: "Untitled",
+            artist: "???",
+            youTubeId: "dQw4w9WgXcQ",
+            year: 2000
+        };
+
+        // append to end
+        const songs = [...this.state.currentList.songs, newSong];
+        const list  = { ...this.state.currentList, songs };
+        this.setStateWithUpdatedList(list);
+    };
+
     render() {
-        let canAddSong = this.state.currentList !== null;
+        let canAddSong = !!this.state.currentList; // true only if list is open
         let canUndo = this.tps.hasTransactionToUndo();
         let canRedo = this.tps.hasTransactionToDo();
         let canClose = this.state.currentList !== null;
@@ -364,6 +382,7 @@ class App extends React.Component {
                     canUndo={canUndo}
                     canRedo={canRedo}
                     canClose={canClose} 
+                    addSongCallback={this.addSong}
                     undoCallback={this.undo}
                     redoCallback={this.redo}
                     closeCallback={this.closeCurrentList}

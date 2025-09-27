@@ -84,7 +84,7 @@ export default class SongCard extends React.Component {
         
         // YouTube href
         const youTubeHref = song.youTubeId ? `https://www.youtube.com/watch?v=${song.youTubeId}` : null;
-
+        const displayTitle = `${index + 1}. ${song.title}`; // numbering
 
         return (
             <div
@@ -110,10 +110,10 @@ export default class SongCard extends React.Component {
                     draggable={false}
                     onClick={(e) => e.stopPropagation()} // don't interfere with drag/select
                     >
-                    {song.title}
+                    {displayTitle}
                     </a>
                 ) : (
-                    <span className="song-card-title">{song.title}</span>
+                    <span className="song-card-title">{displayTitle}</span>
                 )}
                 <span className="song-card-by"> by </span>
                 <span className="song-card-artist">{song.artist}</span>
